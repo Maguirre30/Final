@@ -1,0 +1,441 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TweenMax.min.js"></script>
+    <script src="https://kit.fontawesome.com/310a3d79fb.js" crossorigin="anonymous"></script>
+	<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+    <title>Jaguarete | Jugueteria</title>
+  </head>
+  <body>
+
+
+    <header class="header">
+      <!-- Header Main -->
+        <div class="header_main">
+            <div class="container">
+                <div class="row">
+                    <!-- Logo -->
+                    <div class="col-lg-8 col-sm-8 col-8 order-1">
+                        <div class="logo_container">
+                            <div class="logo"><a href="{% url 'index' %}">JAGUARETE KAA</a></div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-4 order-lg-3 order-2 text-lg-left text-right">
+                        <div class="wishlist_cart d-flex flex-row align-items-center justify-content-end">
+                            {% if user.is_authenticated %}
+                            <div class="wishlist d-flex flex-row align-items-center justify-content-end">
+                                <div class="wishlist_icon"><i class="fas fa-child fa-lg"></i></div>
+                                <div class="wishlist_content">
+                                    <div class="wishlist_text"><a href="#">{{ user.username.upper }}</a></div>
+                                </div>
+                            </div> 
+                            <div class="wishlist d-flex flex-row align-items-center justify-content-end">
+                                <div class="wishlist_icon"><i class="fas fa-power-off fa-lg"></i></div>
+                                <div class="wishlist_content">
+                                    <div class="wishlist_text"><a href="{% url 'logout' %}">Salir</a></div>
+                                </div>
+                            </div> 
+                            {% else %}
+                            <div class="wishlist d-flex flex-row align-items-center justify-content-end">
+                                <div class="wishlist_icon"><i class="fas fa-user-lock fa-lg"></i></div>
+                                <div class="wishlist_content">
+                                    <div class="wishlist_text"><a href="{% url 'login' %}">Ingreso</a></div>
+                                </div>
+                            </div> 
+                            <div class="wishlist d-flex flex-row align-items-center justify-content-end">
+                                <div class="wishlist_icon"><i class="fas fa-user-plus fa-lg"></i></div>
+                                <div class="wishlist_content">
+                                    <div class="wishlist_text"><a href="{% url 'registro' %}">Registro</a></div>
+                                </div>
+                            </div>
+                            {% endif %}  <!-- Carrito -->
+                            <div class="carrito">
+                                <div class="cart_container d-flex flex-row align-items-center justify-content-end">
+                                    <div class="cart_icon"> <i class="fab fa-opencart fa-lg"></i>
+                                        <div class="cart_count"><span data-html="true" id="cart" type="button" data-container="body" data-toggle="popover" data-placement="bottom">0</span></div>
+                                    </div>
+                                    <div class="cart_content">
+                                        <div class="cart_text"><a href="{% url 'order' %}">Carrito</a></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
+
+
+    <!-- Main Navigation -->
+
+        <nav class="main_nav">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="main_nav_content d-flex flex-row">
+                            <!-- Categories Menu -->
+                            <!-- Main Nav Menu -->
+                            <div class="main_nav_menu">
+                                <ul class="standard_dropdown main_nav_dropdown">
+                                    <li><a href="{% url 'index' %}">Home<i class="fas fa-chevron-down"></i></a></li>
+                                    <li class="hassubs"> <a href="#">Categorias<i class="fas fa-chevron-down"></i></a>
+                                        <ul>
+                                        {% for Seccion in lista_secciones %}
+                                            <li> <a href="{% url 'filtro_secciones' Seccion.id %}">{{ Seccion.nomCateg }}<i class="fas fa-chevron-down"></i></a></li>
+                                        {% endfor %}
+                                        </ul>
+                                    </li>
+                                    <li><a href="{% url 'acerca' %}">Acerca de...<i class="fas fa-chevron-down"></i></a></li>
+                                    <li><a href="mailto:matiasaguirre3007@gmail.com">Contacto<i class="fas fa-chevron-down"></i></a></li>
+                                    {% if perms.app.add_producto %}
+                                    <li><a href="{% url 'agregar' %}"> <span class="btn btn-info">Nuevo Producto</span></a></li>
+                                    {% endif %}
+                                </ul>
+                            </div> <!-- Menu Trigger -->
+                            <div class="menu_trigger_container ml-auto">
+                                <div class="menu_trigger d-flex flex-row align-items-center justify-content-end">
+                                    <div class="menu_burger">
+                                        <div class="menu_trigger_text">menu</div>
+                                        <div class="cat_burger menu_burger_inner"><span></span><span></span><span></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-12 order-lg-2 order-3 text-lg-left text-right">
+                        <div class="header_search">
+                            <div class="header_search_content">
+                                <div class="header_search_form_container">
+                                    <form action="{% url 'index' %}" class="header_search_form clearfix"> <input name="item_name" type="search" required="required" class="header_search_input" placeholder="Buscar Producto...">
+                                        <button type="submit" class="header_search_button trans_300" value="Submit"><img src="https://res.cloudinary.com/dxfq3iotg/image/upload/v1560918770/search.png" alt=""></button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+        </nav>
+         <!-- Menu -->
+
+
+
+        <div class="page_menu">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <div class="page_menu_content">
+                            <div class="page_menu_search">
+                                <form action="#"> <input type="search" required="required" name="item_name" class="page_menu_search_input" placeholder="Buscar Producto..."> </form>
+                            </div>
+                            <ul class="page_menu_nav">
+                                <li class="page_menu_item"> <a href="#">Home<i class="fa fa-angle-down"></i></a> </li>
+                                <li class="page_menu_item has-children"> <a href="#">Categorias<i class="fa fa-angle-down"></i></a>
+                                    <ul class="page_menu_selection">
+                                        <li><a href="#">SubCateg<i class="fa fa-angle-down"></i></a></li>
+                                    </ul>
+                                </li>
+                                <li class="page_menu_item"><a href="blog.html">Acerca de...<i class="fa fa-angle-down"></i></a></li>
+                                <li class="page_menu_item"><a href="blog.html">Contacto<i class="fa fa-angle-down"></i></a></li>
+                                <li class="page_menu_item"><a href="contact.html">Nuevo Producto<i class="fa fa-angle-down"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- FIN HEADER -->
+
+
+  <div class="container">
+   <div class="row">
+      <div class="col-md-12">
+         
+      </div>
+   </div>
+  <div class="container">
+    <div class="row">
+      {% for Producto in producto_cards %}
+      <div class="col-md-4">
+        <div class="card">
+          <img src="{{ Producto.imagen}}" class="card-img-top">
+          <div class="card-body">
+            <div id="nm{{ Producto.id}}" class="card-title">{{ Producto.nombre}}</div>
+            <div id="precio{{ Producto.id}}" class="card-text">{{ Producto.precio}}</div>
+            <a href="/{{Producto.id}}" class="btn btn-primary"><i class="far fa-eye"></i> Ver</a>
+            {% if user.is_authenticated %}
+            <button id="{{Producto.id}}" class="btn carrito btn-primary"><i class="fas fa-cart-plus"></i> Comprar</button>
+            {% else %}
+            <a href="{% url 'login' %}"><span class="btn carrito btn-primary"><i class="fas fa-cart-plus"></i> Comprar</span></a>
+            {% endif %}
+                                    {% if perms.app.add_producto %}
+            <a href="{% url 'modificar' Producto.id %}"><span class="btn carrito btn-warning">Editar</span></a>
+            <a href="{% url 'eliminar' Producto.id %}"><span class="btn carrito btn-danger">Borrar</span></a>
+                                    {% endif %}
+          </div>
+        </div> 
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+
+  <div class="container">
+    <div class="row">
+    <table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">Nombre</th>
+      <th scope="col">Precio</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for Producto in producto_list %}
+    <tr>
+      <td><a href="/{{Producto.id}}">{{ Producto.nombre}}</a>
+                                    {% if perms.app.add_producto %} | <a href="{% url 'modificar' Producto.id %}"><span class="badge badge-warning"><i class="far fa-edit"></i> Editar</span></a> | <a href="{% url 'eliminar' Producto.id %}"><span class="badge badge-danger"><i class="far fa-trash-alt"></i> Eliminar</span></a>
+                                    {% endif %}</td>
+      <td>{{ Producto.precio}}</td>
+    </tr>
+      {% endfor %}
+  </tbody>
+</table>
+    </div>
+  </div>
+
+<!-- Footer -->
+<footer class="page-footer font-small dark">
+
+  <!-- Copyright -->
+  <div class="footer-copyright text-center py-3 " style="color: white;">© 2021 Copyright:
+    <a href="{% url 'index' %}"> JAGUARETE KAA S.A.</a>
+  </div>
+  <!-- Copyright -->
+
+</footer>
+<!-- Footer -->
+
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
+    
+  </body>
+  <script type="text/javascript">
+    console.log('Esto esta funcionando');
+
+    if(localStorage.getItem('cart')==null){
+      var cart = {};
+    }
+    else{
+      cart = JSON.parse(localStorage.getItem('cart'));
+    }
+
+    $(document).on('click','.carrito',function(){
+      console.log("Agregado al carrito!");
+      var item_id = this.id.toString();
+      console.log(item_id);
+
+      if(cart[item_id]!=undefined){
+        quantity = cart[item_id][0] + 1;
+         cart[item_id][0] = quantity;
+         cart[item_id][2] = cart[item_id][2] + parseFloat(document.getElementById("precio"+item_id).innerHTML);
+
+
+      }
+      else{
+        quantity = 1;
+        precio = parseFloat(document.getElementById("precio"+item_id).innerHTML);
+        name = document.getElementById("nm"+item_id).innerHTML;
+        cart[item_id] = [quantity,name,precio];
+
+
+      }
+      console.log(cart);
+      localStorage.setItem('cart',JSON.stringify(cart));
+      document.getElementById("cart").innerHTML= "" + Object.keys(cart).length +"";
+    });
+
+    DislayCart(cart);
+    function DislayCart(cart){
+        var cartString ="";
+        cartString += "<h5>Sus pedidos</h5>";
+        var cartIndex = 1;
+        for(var x in cart){
+            cartString += cartIndex;
+            cartString += document.getElementById("nm"+x).innerHTML + "Cant:" + cart[x][0] + "<br>";
+            cartIndex+=1;
+        }
+
+        cartString += "<a href='/carrito'><span class='btn btn-warning' id='carrito'>Ir al carrito</span></a>";
+        document.getElementById("cart").setAttribute('data-content',cartString);
+        $('[data-toggle="popover"]').popover();
+    }
+  </script>
+
+  <script>
+        $(document).ready(function()
+      {
+      "use strict";
+
+      var menuActive = false;
+      var header = $('.header');
+      setHeader();
+      initCustomDropdown();
+      initPageMenu();
+
+      function setHeader()
+      {
+
+      if(window.innerWidth > 991 && menuActive)
+      {
+      closeMenu();
+      }
+      }
+
+      function initCustomDropdown()
+      {
+      if($('.custom_dropdown_placeholder').length && $('.custom_list').length)
+      {
+      var placeholder = $('.custom_dropdown_placeholder');
+      var list = $('.custom_list');
+      }
+
+      placeholder.on('click', function (ev)
+      {
+      if(list.hasClass('active'))
+      {
+      list.removeClass('active');
+      }
+      else
+      {
+      list.addClass('active');
+      }
+
+      $(document).one('click', function closeForm(e)
+      {
+      if($(e.target).hasClass('clc'))
+      {
+      $(document).one('click', closeForm);
+      }
+      else
+      {
+      list.removeClass('active');
+      }
+      });
+
+      });
+
+      $('.custom_list a').on('click', function (ev)
+      {
+      ev.preventDefault();
+      var index = $(this).parent().index();
+
+      placeholder.text( $(this).text() ).css('opacity', '1');
+
+      if(list.hasClass('active'))
+      {
+      list.removeClass('active');
+      }
+      else
+      {
+      list.addClass('active');
+      }
+      });
+
+
+      $('select').on('change', function (e)
+      {
+      placeholder.text(this.value);
+
+      $(this).animate({width: placeholder.width() + 'px' });
+      });
+      }
+
+      /*
+
+      4. Init Page Menu
+
+      */
+
+      function initPageMenu()
+      {
+      if($('.page_menu').length && $('.page_menu_content').length)
+      {
+      var menu = $('.page_menu');
+      var menuContent = $('.page_menu_content');
+      var menuTrigger = $('.menu_trigger');
+
+      //Open / close page menu
+      menuTrigger.on('click', function()
+      {
+      if(!menuActive)
+      {
+      openMenu();
+      }
+      else
+      {
+      closeMenu();
+      }
+      });
+
+      //Handle page menu
+      if($('.page_menu_item').length)
+      {
+      var items = $('.page_menu_item');
+      items.each(function()
+      {
+      var item = $(this);
+      if(item.hasClass("has-children"))
+      {
+      item.on('click', function(evt)
+      {
+      evt.preventDefault();
+      evt.stopPropagation();
+      var subItem = item.find('> ul');
+      if(subItem.hasClass('active'))
+      {
+      subItem.toggleClass('active');
+      TweenMax.to(subItem, 0.3, {height:0});
+      }
+      else
+      {
+      subItem.toggleClass('active');
+      TweenMax.set(subItem, {height:"auto"});
+      TweenMax.from(subItem, 0.3, {height:0});
+      }
+      });
+      }
+      });
+      }
+      }
+      }
+
+      function openMenu()
+      {
+      var menu = $('.page_menu');
+      var menuContent = $('.page_menu_content');
+      TweenMax.set(menuContent, {height:"auto"});
+      TweenMax.from(menuContent, 0.3, {height:0});
+      menuActive = true;
+      }
+
+      function closeMenu()
+      {
+      var menu = $('.page_menu');
+      var menuContent = $('.page_menu_content');
+      TweenMax.to(menuContent, 0.3, {height:0});
+      menuActive = false;
+      }
+
+
+      });
+</script>
+</html>
